@@ -428,6 +428,18 @@ NRI_API Result NRI_CALL nriEnumerateAdapters(AdapterDesc* adapterDescs, uint32_t
     instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     instanceCreateInfo.pApplicationInfo = &applicationInfo;
 
+#if defined(__APPLE__)
+    std::vector<const char*> instanceExtensions = 
+    {
+        "VK_KHR_get_physical_device_properties2",
+        VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
+    };
+
+    instanceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(instanceExtensions.size());
+    instanceCreateInfo.ppEnabledExtensionNames = instanceExtensions.data();
+    instanceCreateInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+#endif
+
     VkInstance instance = VK_NULL_HANDLE;
     VkResult result = vkCreateInstance(&instanceCreateInfo, nullptr, &instance);
 

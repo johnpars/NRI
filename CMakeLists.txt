@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.15)
 # Options
 option (NRI_DISABLE_XLIB_SUPPORT "Disable 'xlib' support" OFF)
 option (NRI_DISABLE_WAYLAND_SUPPORT "Disable 'wayland' support" OFF)
-option (NRI_STATIC_LIBRARY "Build static library" OFF)
+option (NRI_STATIC_LIBRARY "Build static library" ON)
 
 if (WIN32)
     option (NRI_ENABLE_STREAMLINE_SUPPORT "Enables streamline wrapper for streamline integration. Requires NRI_STREAMLINE_SDK_PATH to point to a valid streamline package" OFF)
@@ -25,8 +25,8 @@ if (NOT IS_SUBMODULE)
 endif()
 
 # Generate PDB for Release builds
-set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
-set (CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
+# set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
+# set (CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
 
 # Create project
 file (READ "${CMAKE_CURRENT_SOURCE_DIR}/Include/NRI.h" ver_h)
