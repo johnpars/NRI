@@ -14,6 +14,7 @@ license agreement from NVIDIA CORPORATION is strictly prohibited.
 #include "DeviceBase.h"
 
 #include <vulkan/vulkan.h>
+#include <vulkan/vulkan_beta.h>
 #undef CreateSemaphore
 
 #include "DispatchTable.h"

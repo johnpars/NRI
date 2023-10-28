@@ -642,6 +642,10 @@ Result DeviceVK::CreateInstance(const DeviceCreationDesc& deviceCreationDesc)
         extensions.push_back(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
     #endif
 
+#if defined(__APPLE__)
+    extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+#endif
+
     if (IsExtensionSupported(VK_EXT_DEBUG_UTILS_EXTENSION_NAME, supportedExts))
     {
         extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -661,7 +665,13 @@ Result DeviceVK::CreateInstance(const DeviceCreationDesc& deviceCreationDesc)
     const VkInstanceCreateInfo info = {
         VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
         nullptr,
+
+#if defined(__APPLE__)
+        (VkInstanceCreateFlags)VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR,
+#else
         (VkInstanceCreateFlags)0,
+#endif
+
         &appInfo,
         (uint32_t)layers.size(),
         layers.data(),
@@ -706,6 +716,7 @@ Result DeviceVK::FindPhysicalDeviceGroup(const AdapterDesc* adapterDesc, bool en
     m_VK.EnumeratePhysicalDeviceGroups(m_Instance, &deviceGroupNum, nullptr);
 
     VkPhysicalDeviceGroupProperties* deviceGroups = STACK_ALLOC(VkPhysicalDeviceGroupProperties, deviceGroupNum);
+    deviceGroups->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GROUP_PROPERTIES;
     VkResult result = m_VK.EnumeratePhysicalDeviceGroups(m_Instance, &deviceGroupNum, deviceGroups);
 
     RETURN_ON_FAILURE(GetLog(), result == VK_SUCCESS, GetReturnCode(result),
@@ -723,7 +734,7 @@ Result DeviceVK::FindPhysicalDeviceGroup(const AdapterDesc* adapterDesc, bool en
 
         uint32_t majorVersion = VK_VERSION_MAJOR(props.properties.apiVersion);
         uint32_t minorVersion = VK_VERSION_MINOR(props.properties.apiVersion);
-        bool isSupported = majorVersion * 10 + minorVersion >= 13;
+        bool isSupported = majorVersion * 10 + minorVersion >= 12;
 
         if (adapterDesc)
         {
@@ -1108,6 +1119,10 @@ Result DeviceVK::CreateLogicalDevice(const DeviceCreationDesc& deviceCreationDes
         desiredExts.push_back(VK_EXT_MESH_SHADER_EXTENSION_NAME);
         m_IsMeshShaderExtSupported = true;
     }
+
+#if defined(__APPLE__)
+    desiredExts.push_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
+#endif
 
     VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingFeatures = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR };
     VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR };
